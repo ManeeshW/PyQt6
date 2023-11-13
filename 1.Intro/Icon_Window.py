@@ -14,7 +14,9 @@ class Window(QWidget):
         self.setWindowIcon(QIcon("/home/maneesh/Desktop/LAB2.0/PyQt6/1.Intro/images/p.png"))
         self.setFixedHeight(400)
         self.setFixedWidth(700)
-
+        self.setStyleSheet('background-color:green')
+        self.setWindowOpacity(0.5) #0-1
+ 
 
 
 app = QApplication(sys.argv)
