@@ -12,6 +12,8 @@ class Window(QWidget):
         self.setGeometry(self.x,self.y,self.H,self.W)
         self.setWindowTitle("Maneesh PyQt6 GUI")
         self.setWindowIcon(QIcon("/home/maneesh/Desktop/LAB2.0/PyQt6/1.Intro/images/p.png"))
+        self.setFixedHeight(400)
+        self.setFixedWidth(700)
 
 
 
