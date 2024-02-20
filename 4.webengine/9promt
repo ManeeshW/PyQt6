@@ -1,0 +1,94 @@
+create a menue as "File", "Edit", "View", "Help". under "file" menue create items as "open folder", "save", "save as" items. When we click "open folder" i need to browse and select image folder path. Under "Help" button create a item "About" and add description about opensource licance and add my name Maneesha Wickramasuriya.  please update the code below following the instructions. 
+
+merge this code 
+
+from PyQt6.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog, QTextEdit, QVBoxLayout, QWidget, QLabel, QSlider, QHBoxLayout, QPushButton
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
+
+import os
+import sys
+import numpy as np
+import dash
+from dash import dcc, html
+import dash.dependencies as dd
+from plotly.graph_objs import Scatter3d, Figure
+from PyQt6.QtGui import QPixmap, QAction
+from PyQt6.QtCore import QUrl, Qt, QSize
+from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QVBoxLayout, QWidget, QLabel, QSlider, QHBoxLayout, QPushButton, QScrollArea, QSizePolicy, QDialog, QVBoxLayout, QTextEdit
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.images = []
+
+        self.resize(1500, 700)
+
+        self.file_menu = self.menuBar().addMenu("&File")
+
+        self.image_label = QLabel()
+        self.image_label.setFixedSize(640, 480)  # Set fixed size for the image
+        self.image_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
+        self.image_label.setScaledContents(True)
+
+        # Create a QScrollArea to contain the QLabel
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidget(self.image_label)
+        self.scroll_area.setWidgetResizable(True)
+
+        # Create a QSlider
+        self.slider = QSlider(Qt.Orientation.Horizontal)
+        self.slider.setMinimum(1)
+        self.slider.setMaximum(100)  # You can set this to the number of images
+        self.slider.setValue(1)
+        self.slider.valueChanged.connect(self.change_image)
+
+        # Create a QVBoxLayout and add the QScrollArea and QSlider
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.image_label)
+        self.layout.addWidget(self.slider)
+
+        # Create a QWebEngineView
+        self.web_view = QWebEngineView()
+        self.web_view.setFixedSize(800, 800) 
+
+        # Load the Dash app
+        self.web_view.load(QUrl("http://localhost:8050"))
+
+        # Create a QVBoxLayout and add the QWebEngineView
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.scroll_area)
+        self.layout.addWidget(self.web_view)
+
+        # Create a QWidget, set its layout to QVBoxLayout
+        self.widget = QWidget()
+        self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
+
+    def open_folder(self):
+        folder_path = QFileDialog.getExistingDirectory(self, "Select Folder")
+        if folder_path:
+            # Get a list of the .jpg and .png files in the folder
+            self.images = sorted([os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.jpg', '.png'))])
+            if self.images:
+                # Set the range of the QSlider
+                self.slider.setRange(0, len(self.images) - 1)
+                # Display the first image
+                self.display_image(0)
+
+    def display_image(self, index):
+        # Load the image
+        pixmap = QPixmap(self.images[index])
+        # Resize the image to fit the QLabel
+        pixmap = pixmap.scaled(self.image_label.size(), Qt.AspectRatioMode.KeepAspectRatio)
+        # Set the QPixmap to the QLabel
+        self.image_label.setPixmap(pixmap)
+        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Align the image to the center
+
+# Create a PyQt6 application
+app = QApplication(sys.argv)
+window = MainWindow()
+window.show()
+app.exec()

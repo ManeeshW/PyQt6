@@ -1,19 +1,34 @@
-from PyQt6.QtCore import QUrl
-from PyQt6.QtWidgets import *
-from PyQt6.QtGui import *
-from PyQt6.QtWebEngineWidgets import *
+import os
 import sys
+import numpy as np
+import plotly.graph_objs as go
+from PyQt6.QtCore import QUrl
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import QApplication
+import plotly.offline
 
-class MainWindow(QMainWindow):
-    def __init__(self, *args, **kwargs):
-        super(MainWindow,self).__init__(*args, **kwargs)
-        self.browser = QWebEngineView()
-        self.setCentralWidget(self.browser)
-        # self.browser.setUrl(QUrl("https://www.google.com"))
-        self.browser.setHtml("<html><body><h1>Hello World... Hello World</h1></body></html>")
+# Create a 3D scatter plot
+fig = go.Figure()
+fig.add_scatter3d(
+    x=np.random.rand(100),
+    y=np.random.rand(100),
+    z=np.random.rand(100),
+    mode='markers',
+    marker={'size': 30, 'color': np.random.rand(100), 'opacity': 0.6, 'colorscale': 'Viridis'}
+)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()  # moved show outside main widget
-    sys.exit(app.exec())   #  use app.exec instead of app.exec_
+# Save the plot to a temporary HTML file
+temp_name = 'Temp_plot.html'
+plotly.offline.plot(fig, filename=temp_name, auto_open=False)
+
+# Create a PyQt6 application
+app = QApplication(sys.argv)
+
+# Create a web view and load the plot
+web = QWebEngineView()
+file_path = os.path.abspath(temp_name)
+web.load(QUrl.fromLocalFile(file_path))
+web.show()
+
+# Start the application
+sys.exit(app.exec())
